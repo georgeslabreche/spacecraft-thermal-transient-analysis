@@ -1,6 +1,5 @@
 function dTdt = eclipse(time_eclipse, initial_T)
-%ECLIPSE Summary of this function goes here
-%   Detailed explanation goes here
+%ECLIPSE Thermal transient for the satellite's eclipse period.
     load('satellite_properties');
 
     % Stefan-Boltzmann constant

@@ -1,6 +1,5 @@
 function dTdt = sun(time_sun, initial_T)
-%SUN Summary of this function goes here
-%   Detailed explanation goes here
+%SUN Thermal transient for the satellite's sun illuminated period.
     load('satellite_properties');  
     
     % Stefan-Boltzmann constant.
