@@ -3,8 +3,8 @@ function [time_span, T_C] = simulate(orbit, satprop)
     % temperature data over time (in Celsius and minutes respectively).
 
     % List that will contain data to plott.
-    time_span = []
-    T_K = []
+    time_span = [];
+    T_K = [];
 
     % ode45 options.
     options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Accuracy.
