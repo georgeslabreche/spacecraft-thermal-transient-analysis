@@ -8,9 +8,7 @@ Try to modify the code and simulate for longer periods in order to understand th
 
 Simulate the behaviour in Matlab and compare it with respect to the analytics solution in Berlin pp. 335:
 
-![Expected Output 1](https://raw.githubusercontent.com/georgeslabreche/main-thermal-transient/master/img/expected-thermal-output-1.png)
-
-![Expected Output 2](https://raw.githubusercontent.com/georgeslabreche/main-thermal-transient/master/img/expected-thermal-output-2.png)
+![Expected Output Berlin](https://raw.githubusercontent.com/georgeslabreche/main-thermal-transient/master/img/expected-thermal-output-berlin.png)
 
 ## Parametric Studies
 - **W.r.t changes of thermal capacity**, describe the main effects when the thermal capacity is lower or higher than 900 J/kg°C.
@@ -18,3 +16,7 @@ Simulate the behaviour in Matlab and compare it with respect to the analytics so
 - **W.r.t changes of radius**, describe the main effects when radius changes from 0.1 to 10 m.
 - **W.r.t. changes of internal heat**, from 10 W to 1000 W.
 - **W.r.t. orbit altitude,** from h = 200 km to 1000 km.
+
+## User Interface
+
+![Expected Output Berlin](https://raw.githubusercontent.com/georgeslabreche/main-thermal-transient/master/img/gui.png)
