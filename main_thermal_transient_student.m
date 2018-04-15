@@ -8,33 +8,14 @@ clear all;
 close all;
 clc;
 
-% Define global variables.
-global r m alpha epsilon c qs Ae Aa sigma S
-
-h = 600; % km
+% Earth radius.
 Re = 6378; % km
 
-% Satellite radius (it's a spherical satellite).
-r = 1; % m
-
-% Satellite mass.
-m = 100; % kg
-
-% Satellite is made out of unpolished aluminium.
-alpha = 0.25; % absorptivity
-epsilon = 0.25; % emissivity
-c = 900; % J/Kg/K
-
-% An amplifier inside the spacecraft radiates heat. 
-qs = 200; % W
+% Satellite altitude.
+h = 600; % km
 
 % Stefan-Boltzmann constant
 sigma = 5.67e-8; % W/(m^2*K^4)
-Ae = 4 * pi * r^2;
-Aa = pi * r^2;
-
-% Solar constant.
-S = 1378;
 
 % Standard gravitational parameter for Earth. 
 GMe = 398600; % km^3/s^-2 
@@ -65,7 +46,6 @@ beta = 0;
 % Orbital period - Kepler's Third Law.
 T_orb = 2 * pi * sqrt((Re + h)^3 / GMe); % Seconds.
 
-
 % To calculate the eclipse period and the sun illumination period, first 
 % calculate the spacecraft eclipse fraction using the equation in the
 % following source:
@@ -83,39 +63,44 @@ T_sun_ill = (1 - fE) * T_orb;
 
 % First Eclipse.
 tspan = [0 : 1: T_ecl];
-y0 = [T0_K];
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8);
+options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Accuracy.
 
-% you need to write the function eclipse(t, y).
-[time_eclipse_1, T_eclipse_1] = ode45(@eclipse, tspan, y0, options);
+% Thermal transient.
+[time_eclipse_1, T_eclipse_1] = ode45(@eclipse, tspan, T0_K, options); 
+
+for i = (1: 1: 3)
+   strcat(num2str(time_eclipse_1(i)), ':',  num2str(T_eclipse_1(i)))
+end
 
 % Sun illuminated phase.
-T0 = T_eclipse_1(end);
-tspan = [T_ecl : 1: T_ecl + T_sun_ill];
-y0 = [T0_K];
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8 );
+T0_K = T_eclipse_1(end);
+tspan = [T_ecl: 1: T_ecl + T_sun_ill];
+options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8 ); % Accuracy.
 
-% you need to write the function sun(t,y) 
-[time_sun, T_sun] = ode45(@sun, tspan, y0, options);
+% Thermal transient.
+[time_sun, T_sun] = ode45(@sun, tspan, T0_K, options);
 
 % Second Eclipse.
 T0_K = T_sun(end);
-tspan = [T_ecl + T_sun_ill : 1: 2*T_ecl+T_sun_ill];
-y0 = [T0_K];
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8);
+tspan = [T_ecl + T_sun_ill: 1: 2*T_ecl+T_sun_ill];
+options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Accuracy.
 
-[time_eclipse_2, T_eclipse_2] = ode45(@eclipse, tspan, y0, options);
+% Thermal transient.
+[time_eclipse_2, T_eclipse_2] = ode45(@eclipse, tspan, T0_K, options);
 
 % It might be extended to longer simulation periods.
-time = [time_eclipse_1; time_sun; time_eclipse_2];
-T = [T_eclipse_1; T_sun; T_eclipse_2];
+time_span = [time_eclipse_1; time_sun; time_eclipse_2];
+T_C = [T_eclipse_1; T_sun; T_eclipse_2];
+T_K = T_C - 273;
 
 % Draw figure.
 figure(1)
-plot(time / 60, T - 273) % Plot temperature in celsius across time.
+plot(time_span / 60, T_K) % Plot temperature in celsius across time.
 xlabel('time, min')
 ylabel('temperature, celsius')
 grid
+
+
 
 
 
