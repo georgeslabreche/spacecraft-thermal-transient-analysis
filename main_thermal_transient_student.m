@@ -8,24 +8,28 @@ clear all;
 close all;
 clc;
 
+% Standard gravitational parameter for Earth. 
+GMe = 398600; % km^3/s^-2 
+
+% Stefan-Boltzmann constant.
+sigma = 5.67e-8; % W/(m^2*K^4)
+
+% Number of orbits.
+orbit_num = 10;
+
 % Earth radius.
 Re = 6378; % km
 
 % Satellite altitude.
 h = 600; % km
 
-% Stefan-Boltzmann constant
-sigma = 5.67e-8; % W/(m^2*K^4)
-
-% Standard gravitational parameter for Earth. 
-GMe = 398600; % km^3/s^-2 
-
 % Initial temperature (in Kelvin).
 T0_C = 10; % Celsius.
 T0_K = T0_C + 273; % Kelvin.
 
-% There are two special type of Sun synchronous orbit:
-%   1. Dawn-dusk orbit and noon-midnight orbit.
+% There are two special type of Sun synchronous orbit Dawn-dusk orbit and
+% noon-midnight orbit.
+%   1. Dawn-dusk orbit.
 %       - The sun beta angle is 90 deg.
 %       - The orbit plane normal points the sun always.
 %       - This orbit doesn't undergo eclipses.
@@ -52,51 +56,55 @@ T_orb = 2 * pi * sqrt((Re + h)^3 / GMe); % Seconds.
 %
 % Satellite Engineering, Bill Nadie.
 % Equation 4 under section "Calculation of Eclipse Time."
-% Fall 2003
+% Fall 2003.
 fE = (1/pi) * acos(sqrt(h^2 + 2 * Re * h) / ((Re + h) * cos(beta)));
 
-% Eclipse period
+% Eclipse period.
 T_ecl =  fE * T_orb;
 
-% Sun-illuminated period
+% Sun-illuminated period.
 T_sun_ill = (1 - fE) * T_orb;
 
-% First Eclipse.
-tspan = [0 : 1: T_ecl];
+% For final plotting.
+time_span = []
+T_K = []
+
+% ode45 options.
 options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Accuracy.
 
-% Thermal transient.
-[time_eclipse_1, T_eclipse_1] = ode45(@eclipse, tspan, T0_K, options); 
+m = 0;
+n = 0;
 
-for i = (1: 1: 3)
-   strcat(num2str(time_eclipse_1(i)), ':',  num2str(T_eclipse_1(i)))
+for i = (1: 1: orbit_num)
+    
+    % Eclipse phase.
+    if exist('T_sun', 'var') == 1
+        T0_K = T_sun(end);
+    end
+       
+    tspan = [m * T_ecl + n * T_sun_ill: 1: (m+1) * T_ecl + n * T_sun_ill];
+    [time_eclipse, T_eclipse] = ode45(@eclipse, tspan, T0_K, options); 
+    
+    m = m + 1;
+    
+    % Sun illuminated phase.
+    T0_K = T_eclipse(end);
+    tspan = [m * T_ecl + n * T_sun_ill: 1: m * T_ecl + (n+1) * T_sun_ill];
+    [time_sun, T_sun] = ode45(@sun, tspan, T0_K, options);
+    
+    n = n + 1;
+    
+    time_span = [time_span; time_eclipse; time_sun];
+    T_K = [T_K; T_eclipse; T_sun];
+
 end
 
-% Sun illuminated phase.
-T0_K = T_eclipse_1(end);
-tspan = [T_ecl: 1: T_ecl + T_sun_ill];
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8 ); % Accuracy.
-
-% Thermal transient.
-[time_sun, T_sun] = ode45(@sun, tspan, T0_K, options);
-
-% Second Eclipse.
-T0_K = T_sun(end);
-tspan = [T_ecl + T_sun_ill: 1: 2*T_ecl+T_sun_ill];
-options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8); % Accuracy.
-
-% Thermal transient.
-[time_eclipse_2, T_eclipse_2] = ode45(@eclipse, tspan, T0_K, options);
-
-% It might be extended to longer simulation periods.
-time_span = [time_eclipse_1; time_sun; time_eclipse_2];
-T_C = [T_eclipse_1; T_sun; T_eclipse_2];
-T_K = T_C - 273;
+T_C = T_K - 273;
 
 % Draw figure.
 figure(1)
-plot(time_span / 60, T_K) % Plot temperature in celsius across time.
-xlabel('time, min')
+plot(time_span / 60, T_C) % Plot temperature in celsius across time.
+xlabel('time, minutes')
 ylabel('temperature, celsius')
 grid
 
