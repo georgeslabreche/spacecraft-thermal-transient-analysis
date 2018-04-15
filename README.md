@@ -1,6 +1,10 @@
 # Thermal Transient
 Matlab assignment for Spacecraft Subsystems course in MS Spacecraft Design at LTU Space Campus.
 
+## Getting Started
+1. Open the project in Matlab.
+2. Run `main_gui.mlapp`.
+
 ## Numerical Analysis
 A spherical satellite is launched into a 600 km sun-synchronous noon-midnight orbit. It has a radius of r = 1 m, weighs 100 kg and is made of unpolished aluminium (alpha = 0.25, epsilon = 0.25, c = 900 J/kg K). An amplifier inside the spacecraft radiates hear at qs = 200 W. Calculate the temparature of the spacecraft as it enters eclipse, returns to sunlight, and goes through eclipse one more time. The initial temperature at the start of the sequence T0 = 10°C (283 K). The Stefan-Boltzmann constant sigma = 5.67^-8 W/m^2K^4. The earth's mean radius R = 6371 km.
 
