@@ -11,10 +11,7 @@ function dTdt = eclipse(time_eclipse, initial_T, satprop)
     % Power emitted by the surface:
     qe = satprop.coating.epsilon * satprop.Ae * sigma * initial_T^4;
     
-    % No external heating source during eclise so satprop.radiating_heat = 0.
-    % This means that satprop.radiating_heat / (satprop.mass * satprop.thermal_capacity) = 0
-    
     % The transient expression becomes:
-    dTdt = -qe / (satprop.mass * satprop.thermal_capacity);
+    dTdt = -qe / (satprop.mass * satprop.thermal_capacity) + (satprop.radiating_heat / (satprop.mass * satprop.thermal_capacity));
 
 end
